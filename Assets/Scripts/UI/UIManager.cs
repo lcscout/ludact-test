@@ -7,35 +7,40 @@ using TMPro;
 public class UIManager : MonoBehaviour {
 	[SerializeField] private TMP_Text _shipsCreatedText;
 	[SerializeField] private TMP_Text _shipsSpawnedText;
+	[SerializeField] private TMP_Text _shipsDestroyedText;
 	[SerializeField] private TMP_Text _activeShipsText;
 	[SerializeField] private TMP_Text _roundsText;
 	[SerializeField] private TMP_Text _pauseButtonText;
 	[SerializeField] private Image _pauseBackground;
+	[SerializeField] private TMP_Text _gameModeText;
 
 	private int _shipsCreatedCounter = 0;
 	private int _shipsSpawnedCounter = 0;
+	private int _shipsDestroyedCounter = 0;
 	private int _activeShipsCounter;
 	private int _roundsCounter = 0;
 
 	private void OnEnable() {
-		ShipSpawner.OnShipCreated += () => IncreaseShips(ref _shipsCreatedCounter, _shipsCreatedText, "Ships Created: ");
-		ShipSpawner.OnShipSpawned += () => IncreaseShips(ref _shipsSpawnedCounter, _shipsSpawnedText, "Ships Spawned: ");
+		ShipSpawner.OnShipCreated += () => IncreaseShipCount(ref _shipsCreatedCounter, _shipsCreatedText, "Ships Created: ");
+		ShipSpawner.OnShipSpawned += () => IncreaseShipCount(ref _shipsSpawnedCounter, _shipsSpawnedText, "Ships Spawned: ");
 		ShipSpawner.OnRoundSpawnsFinished += (roundShipsCount) => CacheActiveShipsCount(roundShipsCount);
 		ShipSpawner.OnNewRound += () => IncreaseRounds();
-		Bullet.OnShipDestroyed += () => DecreaseActiveShipsCount();
+		Bullet.OnShipDestroyed += () => ShipDestroyed();
 		GameManager.OnGamePausedOrResumed += (isPaused) => HandlePauseState(isPaused);
+		GameManager.OnGameModeChanged += () => _gameModeText.text = "MODE: " + GameManager.GameMode.ToString().ToUpper();
 	}
 
 	private void OnDisable() {
-		ShipSpawner.OnShipCreated -= () => IncreaseShips(ref _shipsCreatedCounter, _shipsCreatedText, "Ships Created: ");
-		ShipSpawner.OnShipSpawned -= () => IncreaseShips(ref _shipsSpawnedCounter, _shipsSpawnedText, "Ships Spawned: ");
+		ShipSpawner.OnShipCreated -= () => IncreaseShipCount(ref _shipsCreatedCounter, _shipsCreatedText, "Ships Created: ");
+		ShipSpawner.OnShipSpawned -= () => IncreaseShipCount(ref _shipsSpawnedCounter, _shipsSpawnedText, "Ships Spawned: ");
 		ShipSpawner.OnRoundSpawnsFinished -= (roundShipsCount) => CacheActiveShipsCount(roundShipsCount);
 		ShipSpawner.OnNewRound -= () => IncreaseRounds();
-		Bullet.OnShipDestroyed -= () => DecreaseActiveShipsCount();
-		GameManager.OnGamePausedOrResumed += (isPaused) => HandlePauseState(isPaused);
+		Bullet.OnShipDestroyed -= () => ShipDestroyed();
+		GameManager.OnGamePausedOrResumed -= (isPaused) => HandlePauseState(isPaused);
+		GameManager.OnGameModeChanged -= () => _gameModeText.text = "MODE: " + GameManager.GameMode.ToString().ToUpper();
 	}
 
-	private void IncreaseShips(ref int shipCounter, TMP_Text text, string phrase) {
+	private void IncreaseShipCount(ref int shipCounter, TMP_Text text, string phrase) {
 		shipCounter++;
 		UpdateText(text, phrase, shipCounter);
 	}
@@ -43,6 +48,11 @@ public class UIManager : MonoBehaviour {
 	private void CacheActiveShipsCount(int roundShipsCount) {
 		_activeShipsCounter = roundShipsCount;
 		UpdateText(_activeShipsText, "Active Ships: ", _activeShipsCounter);
+	}
+
+	private void ShipDestroyed() {
+		IncreaseShipCount(ref _shipsDestroyedCounter, _shipsDestroyedText, "Ships Destroyed: ");
+		DecreaseActiveShipsCount();
 	}
 
 	private void DecreaseActiveShipsCount() {
@@ -68,5 +78,8 @@ public class UIManager : MonoBehaviour {
 		ShowPauseBackground(isGamePaused);
 	}
 
-	private void ShowPauseBackground(bool isGamePaused) => _pauseBackground.enabled = isGamePaused;
+	private void ShowPauseBackground(bool isGamePaused) {
+		if (_pauseBackground != null)
+			_pauseBackground.enabled = isGamePaused;
+	}
 }
