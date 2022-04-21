@@ -1,0 +1,6 @@
+[*.{cs,vb}]
+
+# to remove conflict with Unity event functions
+dotnet_diagnostic.IDE0051.severity = none
+# to remove "new" can be simplified
+dotnet_diagnostic.IDE0090.severity = none
