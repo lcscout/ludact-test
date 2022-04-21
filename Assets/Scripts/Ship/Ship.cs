@@ -27,12 +27,10 @@ public class Ship : MonoBehaviour {
 
 	private void OnCollisionEnter2D(Collision2D other) {
 		if (other.gameObject.CompareTag("World Bounds"))
-			IgnoreSecondTrigger();
-		if (other.gameObject.CompareTag("World Bounds") || other.gameObject.CompareTag("Destroyer")) {
-			_reflectedDirection = Vector3.Reflect(_lastVelocity.normalized, other.contacts[0].normal);
-			_canAlignTransformUp = true;
-			_rigidbody.velocity = transform.up * _lastVelocity.magnitude;
-		}
+			IgnoreTriggerUntilEnterCameraBounds();
+		if (other.gameObject.CompareTag("World Bounds") || other.gameObject.CompareTag("Destroyer") ||
+			(GameManager.GameMode == GameManager.Mode.Confined && other.gameObject.CompareTag("Camera Bounds")))
+			BounceOnBounds(other.contacts[0].normal);
 	}
 
 	private void OnTriggerExit2D(Collider2D other) {
@@ -44,7 +42,7 @@ public class Ship : MonoBehaviour {
 				WarpToOppositeEdge(normal);
 			}
 
-			IgnoreSecondTrigger();
+			IgnoreSecondTriggerWithCameraBounds();
 		}
 	}
 
@@ -68,6 +66,12 @@ public class Ship : MonoBehaviour {
 
 	public void SetSpeed(float speed) => _speed = speed;
 
+	private void BounceOnBounds(Vector3 normal) {
+		_reflectedDirection = Vector3.Reflect(_lastVelocity.normalized, normal);
+		_canAlignTransformUp = true;
+		_rigidbody.velocity = transform.up * _lastVelocity.magnitude;
+	}
+
 	private void WarpToOppositeEdge(Vector3 normal) {
 		Vector3 invertedVec = transform.position;
 		if (normal.x != 0)
@@ -77,5 +81,7 @@ public class Ship : MonoBehaviour {
 		transform.position = invertedVec;
 	}
 
-	private void IgnoreSecondTrigger() => _ignoreTriggerWithCameraBounds = !_ignoreTriggerWithCameraBounds;
+	private void IgnoreSecondTriggerWithCameraBounds() => _ignoreTriggerWithCameraBounds = !_ignoreTriggerWithCameraBounds;
+
+	private void IgnoreTriggerUntilEnterCameraBounds() => _ignoreTriggerWithCameraBounds = true;
 }
