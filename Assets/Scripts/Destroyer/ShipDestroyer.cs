@@ -35,11 +35,13 @@ public class ShipDestroyer : MonoBehaviour {
 	private void LookAt(Transform target) => transform.up = Vector3.Slerp(transform.up, target.position - transform.position, _destroyerDamp);
 
 	private void Aim(Transform target) {
-		Vector3 targetPosition2D = new Vector3(target.position.x, target.position.y, 0);
-		_crosshair.position = Vector3.Slerp(_crosshair.position, targetPosition2D, _crosshairDamp);
+		_crosshair.position = Vector3.Slerp(_crosshair.position, target.position, _crosshairDamp);
+		KeepCrosshairAligned(_crosshair);
 	}
 
-	public bool WaitSeconds(float secondsToWait) {
+	private void KeepCrosshairAligned(Transform crosshair) => crosshair.position = new Vector3(crosshair.position.x, crosshair.position.y, crosshair.parent.position.z);
+
+	private bool WaitSeconds(float secondsToWait) {
 		_timer += Time.deltaTime;
 		if ((int)(_timer % 60) >= secondsToWait) {
 			_timer = 0f;
