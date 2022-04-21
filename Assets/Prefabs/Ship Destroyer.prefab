@@ -9925,7 +9925,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bulletSpawner: {fileID: 1191992662611750052}
   _crosshair: {fileID: 1316461196}
-  _crosshairDamp: 0.3
+  _crosshairDamp: 0.25
   _destroyerDamp: 0.1
 --- !u!50 &7240719610612943373
 Rigidbody2D:
