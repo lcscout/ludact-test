@@ -8,6 +8,9 @@ public class Parallax : MonoBehaviour {
 	[SerializeField] private Image _lowerLayer;
 	[SerializeField] private Image _mediumLayer;
 	[SerializeField] private Image _higherLayer;
+
+	[Tooltip("Time rate in seconds when a new target position will be assigned")]
+	[SerializeField] private float _newTargetRate = 2.5f;
 	[SerializeField] private float _damping = .5f;
 
 	private Vector3 _targetPosition = Vector3.zero;
@@ -17,7 +20,7 @@ public class Parallax : MonoBehaviour {
 
 	private void Update() {
 		_timer += Time.deltaTime;
-		if ((int)(_timer % 60) >= 2.5f)
+		if ((int)(_timer % 60) >= _newTargetRate)
 			AssignNewTarget();
 
 		FollowTarget();
@@ -29,7 +32,7 @@ public class Parallax : MonoBehaviour {
 	}
 
 	private void FollowTarget() {
-		SlerpLayer(_lowerLayer.transform, _damping/9);
+		SlerpLayer(_lowerLayer.transform, _damping/8);
 		SlerpLayer(_mediumLayer.transform, _damping/3);
 		SlerpLayer(_higherLayer.transform, _damping);
 	}
