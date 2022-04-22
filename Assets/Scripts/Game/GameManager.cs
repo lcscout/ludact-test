@@ -5,17 +5,16 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
-	public enum Mode {
-		Confined,
-		Free
-	}
-
 	public static event Action<bool> OnGamePausedOrResumed;
 	public static event Action OnGameModeChanged;
 
 	public static bool IsGamePaused { get; private set; }
-
 	public static Mode GameMode { get; private set; }
+
+	public enum Mode {
+		Confined,
+		Free
+	}
 
 	[Tooltip("The targeted fps limit")]
 	[SerializeField] private int _targetFrameRate = 60;
@@ -51,6 +50,11 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void Restart() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+	public void SkipRound() {
+		foreach(Ship ship in FindObjectsOfType<Ship>())
+			ship.Kill();
+	}
 
 	private void ResetGameState() {
 		IsGamePaused = false;

@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour {
 	[SerializeField] private TMP_Text _shipsCreatedText;
 	[SerializeField] private TMP_Text _shipsSpawnedText;
 	[SerializeField] private TMP_Text _shipsDestroyedText;
+	[SerializeField] private TMP_Text _shipsInRoundText;
 	[SerializeField] private TMP_Text _activeShipsText;
 	[SerializeField] private TMP_Text _roundsText;
 	[SerializeField] private TMP_Text _pauseButtonText;
@@ -17,25 +18,24 @@ public class UIManager : MonoBehaviour {
 	private int _shipsCreatedCounter = 0;
 	private int _shipsSpawnedCounter = 0;
 	private int _shipsDestroyedCounter = 0;
-	private int _activeShipsCounter;
+	private int _shipsInRoundCounter = 0;
+	private int _activeShipsCounter = 0;
 	private int _roundsCounter = 0;
 
 	private void OnEnable() {
 		ShipSpawner.OnShipCreated += () => IncreaseShipCount(ref _shipsCreatedCounter, _shipsCreatedText, "Ships Created: ");
-		ShipSpawner.OnShipSpawned += () => IncreaseShipCount(ref _shipsSpawnedCounter, _shipsSpawnedText, "Ships Spawned: ");
-		ShipSpawner.OnRoundSpawnsFinished += (roundShipsCount) => CacheActiveShipsCount(roundShipsCount);
-		ShipSpawner.OnNewRound += () => IncreaseRounds();
-		Bullet.OnShipDestroyed += () => ShipDestroyed();
+		ShipSpawner.OnShipSpawned += () => ShipSpawned();
+		ShipSpawner.OnNewRound += () => NewRound();
+		Ship.OnShipDestroyed += () => ShipDestroyed();
 		GameManager.OnGamePausedOrResumed += (isPaused) => HandlePauseState(isPaused);
 		GameManager.OnGameModeChanged += () => _gameModeText.text = "MODE: " + GameManager.GameMode.ToString().ToUpper();
 	}
 
 	private void OnDisable() {
 		ShipSpawner.OnShipCreated -= () => IncreaseShipCount(ref _shipsCreatedCounter, _shipsCreatedText, "Ships Created: ");
-		ShipSpawner.OnShipSpawned -= () => IncreaseShipCount(ref _shipsSpawnedCounter, _shipsSpawnedText, "Ships Spawned: ");
-		ShipSpawner.OnRoundSpawnsFinished -= (roundShipsCount) => CacheActiveShipsCount(roundShipsCount);
-		ShipSpawner.OnNewRound -= () => IncreaseRounds();
-		Bullet.OnShipDestroyed -= () => ShipDestroyed();
+		ShipSpawner.OnShipSpawned -= () => ShipSpawned();
+		ShipSpawner.OnNewRound -= () => NewRound();
+		Ship.OnShipDestroyed -= () => ShipDestroyed();
 		GameManager.OnGamePausedOrResumed -= (isPaused) => HandlePauseState(isPaused);
 		GameManager.OnGameModeChanged -= () => _gameModeText.text = "MODE: " + GameManager.GameMode.ToString().ToUpper();
 	}
@@ -45,18 +45,25 @@ public class UIManager : MonoBehaviour {
 		UpdateText(text, phrase, shipCounter);
 	}
 
-	private void CacheActiveShipsCount(int roundShipsCount) {
-		_activeShipsCounter = roundShipsCount;
-		UpdateText(_activeShipsText, "Active Ships: ", _activeShipsCounter);
+	private void ShipSpawned() {
+		IncreaseShipCount(ref _shipsSpawnedCounter, _shipsSpawnedText, "Ships Spawned: ");
+		IncreaseShipCount(ref _shipsInRoundCounter, _shipsInRoundText, "Ships in Round: ");
+		ChangeActiveShipsCount("increase");
 	}
 
 	private void ShipDestroyed() {
 		IncreaseShipCount(ref _shipsDestroyedCounter, _shipsDestroyedText, "Ships Destroyed: ");
-		DecreaseActiveShipsCount();
+		ChangeActiveShipsCount("decrease");
 	}
 
-	private void DecreaseActiveShipsCount() {
-		_activeShipsCounter--;
+	private void ChangeActiveShipsCount(string change) {
+		if (change == "increase")
+			_activeShipsCounter++;
+		else if (change == "decrease")
+			_activeShipsCounter--;
+		else
+			return;
+
 		UpdateText(_activeShipsText, "Active Ships: ", _activeShipsCounter);
 	}
 
@@ -64,7 +71,10 @@ public class UIManager : MonoBehaviour {
 
 	private void UpdateText(TMP_Text text, string phrase, int number) => text.text = phrase + number;
 
-	private void IncreaseRounds() {
+	private void NewRound() {
+		_activeShipsCounter = 0;
+		_shipsInRoundCounter = 0;
+
 		_roundsCounter++;
 		UpdateText(_roundsText, "Round: ", _roundsCounter);
 	}
