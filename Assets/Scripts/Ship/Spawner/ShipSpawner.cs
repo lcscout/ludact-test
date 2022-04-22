@@ -7,7 +7,6 @@ using Random = UnityEngine.Random;
 using Game.Utils;
 
 public class ShipSpawner : MonoBehaviour {
-	public static event Action<int> OnRoundSpawnsFinished;
 	public static event Action OnShipCreated;
 	public static event Action OnShipSpawned;
 	public static event Action OnNewRound;
@@ -22,11 +21,6 @@ public class ShipSpawner : MonoBehaviour {
 	private int _shipsCounter = 0;
 	private int _round = 0;
 	private int _fibonacci;
-	private bool _areSpawnsFinished = false;
-
-	private void OnEnable() => OnRoundSpawnsFinished += ships => _areSpawnsFinished = false;
-
-	private void OnDisable() => OnRoundSpawnsFinished += ships => _areSpawnsFinished = false;
 
 	private void Start() => _pool = new ObjectPool<Ship>(CreateShip, OnGetShipFromPool, OnReleaseShipToPool, Ship => Destroy(Ship.gameObject), true, 10, 10000);
 
@@ -35,8 +29,6 @@ public class ShipSpawner : MonoBehaviour {
 			NewRound();
 		if (_shipsCounter < _fibonacci)
 			SpawnShip();
-		else if (_areSpawnsFinished)
-			OnRoundSpawnsFinished?.Invoke(_shipsCounter);
 	}
 
 	private Ship CreateShip() {
@@ -68,8 +60,6 @@ public class ShipSpawner : MonoBehaviour {
 		_shipsCounter = 0;
 		_round++;
 		_fibonacci = Algorithm.Fibonacci(_round);
-
-		_areSpawnsFinished = true;
 
 		OnNewRound?.Invoke();
 	}
