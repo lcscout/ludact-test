@@ -5,6 +5,8 @@ using Game.Utils;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Ship : MonoBehaviour {
+	public static event Action OnShipDestroyed;
+
 	private Rigidbody2D _rigidbody;
 	private Action<Ship> _killAction;
 	private Vector3 _lastVelocity;
@@ -62,7 +64,10 @@ public class Ship : MonoBehaviour {
 
 	public void SetKill(Action<Ship> killAction) => _killAction = killAction;
 
-	public void Kill() => _killAction(this);
+	public void Kill() {
+		OnShipDestroyed?.Invoke();
+		_killAction(this);
+	}
 
 	public void SetSpeed(float speed) => _speed = speed;
 

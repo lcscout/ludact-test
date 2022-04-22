@@ -6,19 +6,13 @@ using Game.Utils;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Bullet : MonoBehaviour {
-	public static event Action OnShipDestroyed;
-
 	[SerializeField] private float _speed = 50f;
 
 	private Rigidbody2D _rigidbody;
 	private Action<Bullet> _killAction;
-	private Vector3 _initialPosition;
 	private GameObject _target;
 
-	private void Awake() {
-		_rigidbody = GetComponent<Rigidbody2D>();
-		_initialPosition = transform.position;
-	}
+	private void Awake() => _rigidbody = GetComponent<Rigidbody2D>();
 
 	private void FixedUpdate() {
 		transform.up = _target.transform.position - transform.position; // game utils - look at
@@ -30,8 +24,6 @@ public class Bullet : MonoBehaviour {
 	private void OnTriggerEnter2D(Collider2D other) {
 		if (other.gameObject == _target) {
 			other.gameObject.GetComponent<Ship>()?.Kill();
-			OnShipDestroyed?.Invoke();
-
 			_killAction(this);
 		}
 	}
