@@ -13,15 +13,15 @@ public class ShipDestroyer : MonoBehaviour {
 	private float _timer = 0f;
 	private bool _canSpawnBullet = true;
 
-	private void OnEnable() => Bullet.OnShipDestroyed += () => PrepareForShot();
+	private void OnEnable() => Ship.OnShipDestroyed += () => PrepareForShot();
 
-	private void OnDisable() => Bullet.OnShipDestroyed -= () => PrepareForShot();
+	private void OnDisable() => Ship.OnShipDestroyed -= () => PrepareForShot();
 
 	private void Update() {
 		if (GameManager.IsGamePaused)
 			return;
 
-		if (_target != null) {
+		if (_target != null && _target.isActiveAndEnabled) {
 			LookAt(_target.transform);
 			Aim(_target.transform);
 
