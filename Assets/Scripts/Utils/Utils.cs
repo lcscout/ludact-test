@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Utils {
+namespace Game.Utils { // Useful methods I can reuse anywhere
 	public static class Algorithm {
 		public static int Fibonacci(int number) {
 			if (number == 0)
@@ -13,6 +13,14 @@ namespace Game.Utils {
 	}
 
 	public static class Gameplay {
+		public static Vector3 KeepParentZAxisOf(Transform transform) {
+			return new Vector3(transform.position.x, transform.position.y, transform.parent.position.z);
+		}
+
+		public static Vector3 RemoveZAxisOf(Transform transform) {
+			return new Vector3(transform.position.x, transform.position.y, 0);
+		}
+
 		public static Vector3 GetRandomPositionInSpawnableArea() {
 			Vector3[] area = GetSpawnableArea();
 			float horizontalPos = GetRandomPosition(area[0].x, area[1].x);
@@ -23,10 +31,6 @@ namespace Game.Utils {
 
 		public static Quaternion GetRandomRotation() {
 			return Quaternion.Euler(0, 0, Random.Range(0f, 180f));
-		}
-
-		public static Vector3 RemoveZAxisOf(Transform transform) {
-			return new Vector3(transform.position.x, transform.position.y, 0);
 		}
 
 		private static Vector3[] GetSpawnableArea() {
