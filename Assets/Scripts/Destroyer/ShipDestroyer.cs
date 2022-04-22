@@ -2,20 +2,29 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Utils;
 
 public class ShipDestroyer : MonoBehaviour {
+	[Header("Components References")]
 	[SerializeField] private BulletSpawner _bulletSpawner;
 	[SerializeField] private Transform _crosshair;
-	[SerializeField] private float _crosshairDamp = .08f;
+
+	[Header("Settings")]
+	[Tooltip("How fast the destroyer will rotate towards its target")]
 	[SerializeField] private float _destroyerDamp = .2f;
+
+	[Tooltip("How fast/strict the crosshair will be when following target")]
+	[SerializeField] private float _crosshairDamp = .08f;
 
 	private Ship _target;
 	private float _timer = 0f;
-	private bool _canSpawnBullet = true;
+	private bool _isShotPrepared = true;
 
-	private void OnEnable() => Ship.OnShipDestroyed += () => PrepareForShot();
+	private const float DESTROY_RATE = 1F;
 
-	private void OnDisable() => Ship.OnShipDestroyed -= () => PrepareForShot();
+	private void OnEnable() => Ship.OnShipDestroyed += () => PrepareForShoot();
+
+	private void OnDisable() => Ship.OnShipDestroyed -= () => PrepareForShoot();
 
 	private void Update() {
 		if (GameManager.IsGamePaused)
@@ -23,9 +32,9 @@ public class ShipDestroyer : MonoBehaviour {
 
 		if (_target != null && _target.isActiveAndEnabled) {
 			LookAt(_target.transform);
-			Aim(_target.transform);
+			AimAt(_target.transform);
 
-			if (WaitSeconds(1f) && _canSpawnBullet)
+			if (Wait(DESTROY_RATE) && _isShotPrepared)
 				SpawnBullet(_target.gameObject);
 		}
 		else
@@ -34,16 +43,15 @@ public class ShipDestroyer : MonoBehaviour {
 
 	private void LookAt(Transform target) => transform.up = Vector3.Slerp(transform.up, target.position - transform.position, _destroyerDamp);
 
-	private void Aim(Transform target) {
+	private void AimAt(Transform target) {
 		_crosshair.position = Vector3.Slerp(_crosshair.position, target.position, _crosshairDamp);
-		KeepCrosshairAligned(_crosshair);
+		_crosshair.position = Gameplay.KeepParentZAxisOf(_crosshair);
 	}
 
-	private void KeepCrosshairAligned(Transform crosshair) => crosshair.position = new Vector3(crosshair.position.x, crosshair.position.y, crosshair.parent.position.z);
-
-	private bool WaitSeconds(float secondsToWait) {
+	private bool Wait(float secondsToWait) {
 		_timer += Time.deltaTime;
-		if ((int)(_timer % 60) >= secondsToWait) {
+		int seconds = (int)(_timer % 60);
+		if (seconds >= secondsToWait) {
 			_timer = 0f;
 			return true;
 		}
@@ -53,13 +61,13 @@ public class ShipDestroyer : MonoBehaviour {
 
 	private void SpawnBullet(GameObject target) {
 		_bulletSpawner.SpawnBullet(target);
-		_canSpawnBullet = false; // wait until another ship is destroyed
+		_isShotPrepared = false;
 	}
 
 	private void FindNewTarget() => _target = FindObjectOfType<Ship>();
 
-	private void PrepareForShot() {
+	private void PrepareForShoot() {
 		FindNewTarget();
-		_canSpawnBullet = true;
+		_isShotPrepared = true;
 	}
 }

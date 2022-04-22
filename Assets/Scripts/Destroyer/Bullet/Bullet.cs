@@ -6,6 +6,8 @@ using Game.Utils;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Bullet : MonoBehaviour {
+	[Header("Settings")]
+	[Tooltip("The speed of the bullet")]
 	[SerializeField] private float _speed = 50f;
 
 	private Rigidbody2D _rigidbody;
@@ -15,8 +17,8 @@ public class Bullet : MonoBehaviour {
 	private void Awake() => _rigidbody = GetComponent<Rigidbody2D>();
 
 	private void FixedUpdate() {
-		transform.up = _target.transform.position - transform.position; // game utils - look at
-		_rigidbody.velocity = transform.up * _speed * Time.fixedDeltaTime;
+		LookAtTarget();
+		MoveForward();
 	}
 
 	private void Update() => transform.position = Gameplay.RemoveZAxisOf(transform);
@@ -30,7 +32,12 @@ public class Bullet : MonoBehaviour {
 
 	public void ResetPosition(Vector3 spawnPosition) => transform.position = spawnPosition;
 
-	public void SetKill(Action<Bullet> killAction) => _killAction = killAction;
+	public void Configure(Action<Bullet> killAction, GameObject target) {
+		_killAction = killAction;
+		_target = target;
+	}
 
-	public void SetTarget(GameObject target) => _target = target;
+	private void LookAtTarget() => transform.up = _target.transform.position - transform.position;
+
+	private void MoveForward() => _rigidbody.velocity = transform.up * _speed * Time.fixedDeltaTime;
 }

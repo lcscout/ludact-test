@@ -14,6 +14,7 @@ public class ShipSpawner : MonoBehaviour {
 	[Tooltip("The ship prefab")]
 	[SerializeField] private Ship _shipPrefab;
 
+	[Header("Settings")]
 	[Tooltip("The minimum and maximum speeds the ships can spawn with")]
 	[SerializeField] private Vector2 _speedMinMax = new Vector2(1f, 10f);
 
@@ -22,7 +23,7 @@ public class ShipSpawner : MonoBehaviour {
 	private int _round = 0;
 	private int _fibonacci;
 
-	private void Start() => _pool = new ObjectPool<Ship>(CreateShip, OnGetShipFromPool, OnReleaseShipToPool, Ship => Destroy(Ship.gameObject), true, 10, 10000);
+	private void Start() => _pool = new ObjectPool<Ship>(CreateShip, OnGetShipFromPool, OnReleaseShipToPool, ship => Destroy(ship.gameObject));
 
 	private void Update() {
 		if (_pool.CountActive == 0)
@@ -36,25 +37,23 @@ public class ShipSpawner : MonoBehaviour {
 		return Instantiate(_shipPrefab, Gameplay.GetRandomPositionInSpawnableArea(), Gameplay.GetRandomRotation(), transform);
 	}
 
-	private void OnGetShipFromPool(Ship Ship) => Ship.gameObject.SetActive(true);
+	private void OnGetShipFromPool(Ship ship) => ship.gameObject.SetActive(true);
 
-	private void OnReleaseShipToPool(Ship Ship) {
-		Ship.Reset(Gameplay.GetRandomPositionInSpawnableArea(), Gameplay.GetRandomRotation());
-		Ship.gameObject.SetActive(false);
+	private void OnReleaseShipToPool(Ship ship) {
+		ship.Reset(Gameplay.GetRandomPositionInSpawnableArea(), Gameplay.GetRandomRotation());
+		ship.gameObject.SetActive(false);
 	}
 
 	private void SpawnShip() {
 		Ship ship = _pool.Get();
-		ship.name = "Ship (" + _shipsCounter + ")"; // good for debug
-		ship.SetKill(Kill);
-		ship.SetSpeed(Random.Range(_speedMinMax.x, _speedMinMax.y));
+		ship.Configure(Kill, Random.Range(_speedMinMax.x, _speedMinMax.y), "Ship (" + _shipsCounter + ")");
 
 		_shipsCounter++;
 
 		OnShipSpawned?.Invoke();
 	}
 
-	private void Kill(Ship Ship) => _pool.Release(Ship);
+	private void Kill(Ship ship) => _pool.Release(ship);
 
 	private void NewRound() {
 		_shipsCounter = 0;

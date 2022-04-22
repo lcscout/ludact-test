@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,33 +6,42 @@ using UnityEngine.UI;
 using Game.Utils;
 
 public class Parallax : MonoBehaviour {
+	[Header("Image Layers")]
 	[SerializeField] private Image _lowerLayer;
 	[SerializeField] private Image _mediumLayer;
 	[SerializeField] private Image _higherLayer;
 
-	[Tooltip("Time rate in seconds when a new target position will be assigned")]
-	[SerializeField] private float _newTargetRate = 2.5f;
+	[Header("Settings")]
+	[Tooltip("Time rate in seconds when a new designated position will be assigned")]
+	[SerializeField] private float _designatedPositionRate = 2.5f;
+
+	[Tooltip("Sort of the speed which the higher layer reach the random designated position, the other layers speeds are relative to this one")]
 	[SerializeField] private float _damping = .5f;
 
 	private Vector3 _targetPosition = Vector3.zero;
 	private float _timer = 0f;
 
-	private void Start() => AssignNewTarget();
+	private void Start() => AssignNewTargetPosition();
 
 	private void Update() {
-		_timer += Time.deltaTime;
-		if ((int)(_timer % 60) >= _newTargetRate)
-			AssignNewTarget();
-
-		FollowTarget();
+		WaitAndCall(_designatedPositionRate, AssignNewTargetPosition);
+		FollowTargetPosition();
 	}
 
-	private void AssignNewTarget() {
+	private void WaitAndCall(float secondsToWait, Action action) {
+		_timer += Time.deltaTime;
+		int seconds = (int)(_timer % 60);
+
+		if (seconds >= secondsToWait)
+			action();
+	}
+
+	private void AssignNewTargetPosition() {
 		_timer = 0f;
 		_targetPosition = Gameplay.GetRandomPositionInSpawnableArea();
 	}
 
-	private void FollowTarget() {
+	private void FollowTargetPosition() {
 		SlerpLayer(_lowerLayer.transform, _damping/8);
 		SlerpLayer(_mediumLayer.transform, _damping/3);
 		SlerpLayer(_higherLayer.transform, _damping);
@@ -39,8 +49,6 @@ public class Parallax : MonoBehaviour {
 
 	private void SlerpLayer(Transform layer, float speed) {
 		layer.position = Vector3.Slerp(layer.position, _targetPosition, speed * Time.deltaTime);
-		KeepLayerAligned(layer);
+		layer.position = Gameplay.KeepParentZAxisOf(layer);
 	}
-
-	private void KeepLayerAligned(Transform layer) => layer.position = new Vector3(layer.position.x, layer.position.y, layer.parent.position.z);
 }

@@ -16,23 +16,22 @@ public class GameManager : MonoBehaviour {
 		Free
 	}
 
-	[Tooltip("The targeted fps limit")]
-	[SerializeField] private int _targetFrameRate = 60;
+	[Header("Components Reference")]
 	[SerializeField] private EdgeCollider2D _cameraBounds;
 
+	[Header("Settings")]
+	[Tooltip("The targeted fps limit")]
+	[SerializeField] private int _targetFrameRate = 60;
+
 	private void Awake() {
-		ResetGameState();
+		ResetGameToInitialState();
 		LimitFrameRate();
 	}
 
 	public void PauseAndResume() {
-		if (IsGamePaused)
-			Time.timeScale = 1f;
-		else
-			Time.timeScale = 0f;
-
 		IsGamePaused = !IsGamePaused;
 
+		ChangeTimeScale(IsGamePaused ? 0f : 1f);
 		OnGamePausedOrResumed?.Invoke(IsGamePaused);
 	}
 
@@ -56,7 +55,9 @@ public class GameManager : MonoBehaviour {
 			ship.Kill();
 	}
 
-	private void ResetGameState() {
+	private void ChangeTimeScale(float scale) => Time.timeScale = scale;
+
+	private void ResetGameToInitialState() {
 		IsGamePaused = false;
 		GameMode = Mode.Confined;
 		Time.timeScale = 1f;

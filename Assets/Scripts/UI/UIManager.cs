@@ -5,14 +5,21 @@ using UnityEngine.UI;
 using TMPro;
 
 public class UIManager : MonoBehaviour {
+	[Header("Total Info UI")]
 	[SerializeField] private TMP_Text _shipsCreatedText;
 	[SerializeField] private TMP_Text _shipsSpawnedText;
 	[SerializeField] private TMP_Text _shipsDestroyedText;
+
+	[Header("Round Info UI")]
 	[SerializeField] private TMP_Text _shipsInRoundText;
 	[SerializeField] private TMP_Text _activeShipsText;
 	[SerializeField] private TMP_Text _roundsText;
+
+	[Header("Pause UI")]
 	[SerializeField] private TMP_Text _pauseButtonText;
 	[SerializeField] private Image _pauseBackground;
+
+	[Header("Other UI")]
 	[SerializeField] private TMP_Text _gameModeText;
 
 	private int _shipsCreatedCounter = 0;
@@ -45,38 +52,36 @@ public class UIManager : MonoBehaviour {
 		UpdateText(text, phrase, shipCounter);
 	}
 
-	private void ShipSpawned() {
-		IncreaseShipCount(ref _shipsSpawnedCounter, _shipsSpawnedText, "Ships Spawned: ");
-		IncreaseShipCount(ref _shipsInRoundCounter, _shipsInRoundText, "Ships in Round: ");
-		ChangeActiveShipsCount("increase");
-	}
-
-	private void ShipDestroyed() {
-		IncreaseShipCount(ref _shipsDestroyedCounter, _shipsDestroyedText, "Ships Destroyed: ");
-		ChangeActiveShipsCount("decrease");
-	}
-
-	private void ChangeActiveShipsCount(string change) {
-		if (change == "increase")
-			_activeShipsCounter++;
-		else if (change == "decrease")
-			_activeShipsCounter--;
-		else
-			return;
-
-		UpdateText(_activeShipsText, "Active Ships: ", _activeShipsCounter);
+	private void DecreaseShipCount(ref int shipCounter, TMP_Text text, string phrase) {
+		shipCounter--;
+		UpdateText(text, phrase, shipCounter);
 	}
 
 	private void UpdateText(TMP_Text text, string phrase) => text.text = phrase;
 
 	private void UpdateText(TMP_Text text, string phrase, int number) => text.text = phrase + number;
 
+	private void ShipSpawned() {
+		IncreaseShipCount(ref _shipsSpawnedCounter, _shipsSpawnedText, "Ships Spawned: ");
+		IncreaseShipCount(ref _shipsInRoundCounter, _shipsInRoundText, "Ships in Round: ");
+		IncreaseShipCount(ref _activeShipsCounter, _activeShipsText, "Active Ships: ");
+	}
+
 	private void NewRound() {
-		_activeShipsCounter = 0;
-		_shipsInRoundCounter = 0;
+		ResetRoundVariables();
 
 		_roundsCounter++;
 		UpdateText(_roundsText, "Round: ", _roundsCounter);
+	}
+
+	private void ResetRoundVariables() {
+		_activeShipsCounter = 0;
+		_shipsInRoundCounter = 0;
+	}
+
+	private void ShipDestroyed() {
+		IncreaseShipCount(ref _shipsDestroyedCounter, _shipsDestroyedText, "Ships Destroyed: ");
+		DecreaseShipCount(ref _activeShipsCounter, _activeShipsText, "Active Ships: ");
 	}
 
 	private void HandlePauseState(bool isGamePaused) {
