@@ -7,13 +7,21 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour {
 	public static event Action<bool> OnGamePausedOrResumed;
 	public static event Action OnGameModeChanged;
+	public static event Action OnSoundStateChanged;
 
 	public static bool IsGamePaused { get; private set; }
 	public static Mode GameMode { get; private set; }
+	public static Sound SoundState { get; private set; }
 
 	public enum Mode {
 		Confined,
 		Free
+	}
+
+	public enum Sound {
+		MuteSFX,
+		MuteAll,
+		UnmuteAll
 	}
 
 	[Header("Components Reference")]
@@ -22,6 +30,8 @@ public class GameManager : MonoBehaviour {
 	[Header("Settings")]
 	[Tooltip("The targeted fps limit")]
 	[SerializeField] private int _targetFrameRate = 60;
+
+	private Sound _lastSoundState;
 
 	private void Awake() {
 		ResetGameToInitialState();
@@ -33,6 +43,8 @@ public class GameManager : MonoBehaviour {
 
 		ChangeTimeScale(IsGamePaused ? 0f : 1f);
 		OnGamePausedOrResumed?.Invoke(IsGamePaused);
+
+		MuteSoundDuringPause();
 	}
 
 	public void ChangeGameMode() {
@@ -55,12 +67,26 @@ public class GameManager : MonoBehaviour {
 			ship.Kill();
 	}
 
+	public void ChangeSoundState() {
+		SoundState++;
+		if ((int)SoundState > 2)
+			SoundState = Sound.MuteSFX;
+
+		OnSoundStateChanged?.Invoke();
+	}
+
+	private void ChangeSoundState(Sound soundState) {
+		SoundState = soundState;
+		OnSoundStateChanged?.Invoke();
+	}
+
 	private void ChangeTimeScale(float scale) => Time.timeScale = scale;
 
 	private void ResetGameToInitialState() {
 		IsGamePaused = false;
 		GameMode = Mode.Confined;
 		Time.timeScale = 1f;
+		SoundState = Sound.UnmuteAll;
 
 		if (_cameraBounds != null)
 			_cameraBounds.isTrigger = false;
@@ -69,5 +95,14 @@ public class GameManager : MonoBehaviour {
 	private void LimitFrameRate() {
 		QualitySettings.vSyncCount = 0;
 		Application.targetFrameRate = _targetFrameRate;
+	}
+
+	private void MuteSoundDuringPause() {
+		if (IsGamePaused) {
+			_lastSoundState = SoundState;
+			ChangeSoundState(Sound.MuteAll);
+		}
+		else
+			ChangeSoundState(_lastSoundState);
 	}
 }

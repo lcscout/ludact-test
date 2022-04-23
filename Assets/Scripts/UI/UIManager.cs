@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour {
 
 	[Header("Other UI")]
 	[SerializeField] private TMP_Text _gameModeText;
+	[SerializeField] private TMP_Text _soundStateText;
 
 	private int _shipsCreatedCounter = 0;
 	private int _shipsSpawnedCounter = 0;
@@ -33,19 +34,23 @@ public class UIManager : MonoBehaviour {
 		ShipSpawner.OnShipCreated += () => IncreaseShipCount(ref _shipsCreatedCounter, _shipsCreatedText, "Ships Created: ");
 		ShipSpawner.OnShipSpawned += () => ShipSpawned();
 		ShipSpawner.OnNewRound += () => NewRound();
-		Ship.OnShipDestroyed += () => ShipDestroyed();
+		Ship.OnShipDestroyed += (lastPosition) => ShipDestroyed();
 		GameManager.OnGamePausedOrResumed += (isPaused) => HandlePauseState(isPaused);
-		GameManager.OnGameModeChanged += () => _gameModeText.text = "MODE: " + GameManager.GameMode.ToString().ToUpper();
+		GameManager.OnGameModeChanged += () => UpdateText(_gameModeText, "MODE: " + GameManager.GameMode.ToString().ToUpper());
+		GameManager.OnSoundStateChanged += () => HandleSoundState();
 	}
 
 	private void OnDisable() {
 		ShipSpawner.OnShipCreated -= () => IncreaseShipCount(ref _shipsCreatedCounter, _shipsCreatedText, "Ships Created: ");
 		ShipSpawner.OnShipSpawned -= () => ShipSpawned();
 		ShipSpawner.OnNewRound -= () => NewRound();
-		Ship.OnShipDestroyed -= () => ShipDestroyed();
+		Ship.OnShipDestroyed -= (lastPosition) => ShipDestroyed();
 		GameManager.OnGamePausedOrResumed -= (isPaused) => HandlePauseState(isPaused);
-		GameManager.OnGameModeChanged -= () => _gameModeText.text = "MODE: " + GameManager.GameMode.ToString().ToUpper();
+		GameManager.OnGameModeChanged -= () => UpdateText(_gameModeText, "MODE: " + GameManager.GameMode.ToString().ToUpper());
+		GameManager.OnSoundStateChanged -= () => HandleSoundState();
 	}
+
+	public void PlayClickSound() => AudioManager.Instance.PlaySoundOneShot(1, 1);
 
 	private void IncreaseShipCount(ref int shipCounter, TMP_Text text, string phrase) {
 		shipCounter++;
@@ -96,5 +101,22 @@ public class UIManager : MonoBehaviour {
 	private void ShowPauseBackground(bool isGamePaused) {
 		if (_pauseBackground != null)
 			_pauseBackground.enabled = isGamePaused;
+	}
+
+	private void HandleSoundState() {
+		switch(GameManager.SoundState) {
+			case GameManager.Sound.MuteSFX:
+				AudioManager.Instance.MuteSFX();
+				UpdateText(_soundStateText, "MUTE ALL");
+				break;
+			case GameManager.Sound.MuteAll:
+				AudioManager.Instance.MuteAll();
+				UpdateText(_soundStateText, "UNMUTE ALL");
+				break;
+			case GameManager.Sound.UnmuteAll:
+				AudioManager.Instance.UnmuteAll();
+				UpdateText(_soundStateText, "MUTE SFX");
+				break;
+		}
 	}
 }
