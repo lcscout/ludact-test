@@ -21,12 +21,12 @@ public class BulletSpawner : MonoBehaviour {
 		return Instantiate(_bulletPrefab, transform.position, _bulletPrefab.transform.rotation, transform);
 	}
 
-	private void OnGetBulletFromPool(Bullet bullet) => bullet.gameObject.SetActive(true);
-
-	private void OnReleaseBulletToPool(Bullet bullet) {
+	private void OnGetBulletFromPool(Bullet bullet) {
 		bullet.ResetPosition(transform.position);
-		bullet.gameObject.SetActive(false);
+		bullet.gameObject.SetActive(true);
 	}
+
+	private void OnReleaseBulletToPool(Bullet bullet) => bullet.gameObject.SetActive(false);
 
 	private void Kill(Bullet bullet) => _pool.Release(bullet);
 }
