@@ -5,6 +5,8 @@ using UnityEngine;
 using Game.Utils;
 
 public class ShipDestroyer : MonoBehaviour {
+	public static event Action OnShot;
+
 	[Header("Components References")]
 	[SerializeField] private BulletSpawner _bulletSpawner;
 	[SerializeField] private Transform _crosshair;
@@ -22,9 +24,9 @@ public class ShipDestroyer : MonoBehaviour {
 
 	private const float DESTROY_RATE = 1F;
 
-	private void OnEnable() => Ship.OnShipDestroyed += () => PrepareForShoot();
+	private void OnEnable() => Ship.OnShipDestroyed += (lastPosition) => PrepareForShoot();
 
-	private void OnDisable() => Ship.OnShipDestroyed -= () => PrepareForShoot();
+	private void OnDisable() => Ship.OnShipDestroyed -= (lastPosition) => PrepareForShoot();
 
 	private void Update() {
 		if (GameManager.IsGamePaused)
@@ -62,6 +64,8 @@ public class ShipDestroyer : MonoBehaviour {
 	private void SpawnBullet(GameObject target) {
 		_bulletSpawner.SpawnBullet(target);
 		_isShotPrepared = false;
+
+		OnShot?.Invoke();
 	}
 
 	private void FindNewTarget() => _target = FindObjectOfType<Ship>();
