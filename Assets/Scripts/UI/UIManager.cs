@@ -18,6 +18,7 @@ public class UIManager : MonoBehaviour {
 	[Header("Pause UI")]
 	[SerializeField] private TMP_Text _pauseButtonText;
 	[SerializeField] private Image _pauseBackground;
+	[SerializeField] private List<Button> _buttonsToDisableDuringPause = new List<Button>();
 
 	[Header("Other UI")]
 	[SerializeField] private TMP_Text _gameModeText;
@@ -96,6 +97,8 @@ public class UIManager : MonoBehaviour {
 			UpdateText(_pauseButtonText, "PAUSE");
 
 		ShowPauseBackground(isGamePaused);
+
+		DisableButtonsDuringPause(isGamePaused);
 	}
 
 	private void ShowPauseBackground(bool isGamePaused) {
@@ -118,5 +121,11 @@ public class UIManager : MonoBehaviour {
 				UpdateText(_soundStateText, "MUTE SFX");
 				break;
 		}
+	}
+
+	private void DisableButtonsDuringPause(bool isGamePaused) {
+		foreach (Button button in _buttonsToDisableDuringPause)
+			if (button != null)
+				button.interactable = !isGamePaused;
 	}
 }
