@@ -5,21 +5,26 @@ using Game.Utils;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Ship : MonoBehaviour {
-	public static event Action OnShipDestroyed;
+	public static event Action<Vector3> OnShipDestroyed;
 
 	[Header("Settings")]
 	[Tooltip("The constant amount of increase in speed")]
 	[SerializeField] private float _linearSpeedGrowth = 0.05f;
 
 	private Rigidbody2D _rigidbody;
+	private AudioSource _audioSource;
 	private Action<Ship> _killAction;
-	private float _speed;
 	private Vector3 _lastVelocity;
 	private Vector3 _reflectedDirection = Vector3.up;
+	private GameManager.Sound _lastSoundState = GameManager.Sound.UnmuteAll;
+	private float _speed;
 	private bool _bouncedOnBoundsAtLeastOnce = false;
 	private bool _ignoreTriggerWithCameraBounds = false;
 
-	private void Awake() => _rigidbody = GetComponent<Rigidbody2D>();
+	private void Awake() {
+		_rigidbody = GetComponent<Rigidbody2D>();
+		_audioSource = GetComponent<AudioSource>();
+	}
 
 	private void FixedUpdate() {
 		MoveForward();
@@ -30,7 +35,11 @@ public class Ship : MonoBehaviour {
 			transform.up = _reflectedDirection.normalized;
 	}
 
-	private void Update() => transform.position = Gameplay.RemoveZAxisOf(transform);
+	private void Update() {
+		transform.position = Gameplay.RemoveZAxisOf(transform);
+
+		HandleSound();
+	}
 
 	private void OnCollisionEnter2D(Collision2D other) {
 		bool hitWorldBoundsOrDestroyer = other.gameObject.CompareTag("World Bounds") || other.gameObject.CompareTag("Destroyer");
@@ -67,7 +76,7 @@ public class Ship : MonoBehaviour {
 	}
 
 	public void Kill() {
-		OnShipDestroyed?.Invoke();
+		OnShipDestroyed?.Invoke(transform.position);
 		_killAction(this);
 	}
 
@@ -99,4 +108,18 @@ public class Ship : MonoBehaviour {
 	private void IgnoreSecondTriggerWithCameraBounds() => _ignoreTriggerWithCameraBounds = !_ignoreTriggerWithCameraBounds;
 
 	private void IgnoreTriggerUntilEnterCameraBounds() => _ignoreTriggerWithCameraBounds = true;
+
+	private void HandleSound() {
+		if (_lastSoundState != GameManager.SoundState) // to avoid multiple calls
+			CacheSoundState();
+		else
+			return;
+
+		if (!(GameManager.SoundState == GameManager.Sound.UnmuteAll))
+			_audioSource.mute = true;
+		else
+			_audioSource.mute = false;
+	}
+
+	private void CacheSoundState() => _lastSoundState = GameManager.SoundState;
 }

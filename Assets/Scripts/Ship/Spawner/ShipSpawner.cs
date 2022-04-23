@@ -37,12 +37,12 @@ public class ShipSpawner : MonoBehaviour {
 		return Instantiate(_shipPrefab, Gameplay.GetRandomPositionInSpawnableArea(), Gameplay.GetRandomRotation(), transform);
 	}
 
-	private void OnGetShipFromPool(Ship ship) => ship.gameObject.SetActive(true);
-
-	private void OnReleaseShipToPool(Ship ship) {
+	private void OnGetShipFromPool(Ship ship) {
 		ship.Reset(Gameplay.GetRandomPositionInSpawnableArea(), Gameplay.GetRandomRotation());
-		ship.gameObject.SetActive(false);
+		ship.gameObject.SetActive(true);
 	}
+
+	private void OnReleaseShipToPool(Ship ship) => ship.gameObject.SetActive(false);
 
 	private void SpawnShip() {
 		Ship ship = _pool.Get();
