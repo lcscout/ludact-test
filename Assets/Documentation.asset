@@ -13,5 +13,343 @@ MonoBehaviour:
   m_Name: Documentation
   m_EditorClassIdentifier: 
   icon: {fileID: 2800000, guid: 07a0fa4ef80333c49b7c6cecf51ecf67, type: 3}
-  title: Documentation
-  sections: []
+  title: "Documenta\xE7\xE3o"
+  sections:
+  - heading: 
+    text: 
+    linkText: 
+    url: 
+  - heading: "Instru\xE7\xF5es"
+    text: 
+    linkText: 
+    url: 
+  - heading: 
+    text: "1 - Fazer naves aparecendo na sequ\xEAncia de fibonacci sem utilizar la\xE7os(foreach,
+      for, while, do/while) e utilizando object pooling;"
+    linkText: 
+    url: 
+  - heading: 
+    text: 2 - As naves devem possuir velocidades diferentes, aumentando de maneira
+      linear de acordo com o tempo passado;
+    linkText: 
+    url: 
+  - heading: 
+    text: "3 - Fazer 1 nave ser destru\xEDda a cada 1 segundo;"
+    linkText: 
+    url: 
+  - heading: 
+    text: "4 - Deve haver uma UI demonstrando quantas naves j\xE1 foram criadas e
+      outras informa\xE7\xF5es que julgar pertinente;"
+    linkText: 
+    url: 
+  - heading: 
+    text: "5 - A UI deve ser responsiva com diferentes resolu\xE7\xF5es;"
+    linkText: 
+    url: 
+  - heading: 
+    text: 
+    linkText: 
+    url: 
+  - heading: "Implementa\xE7\xE3o das Instru\xE7\xF5es"
+    text: 
+    linkText: 
+    url: 
+  - heading: 
+    text: "1 - Ship/Spawner/ShipSpawner.cs:28; A minha interpreta\xE7\xE3o dessa
+      instru\xE7\xE3o foi de fazer a quantidade de naves que aparem na tela serem
+      referentes \xE0 sequ\xEAncia de Fibonacci. Outra interpreta\xE7\xE3o que tive,
+      mas descartei foi: o tempo para uma quantidade X qualquer de naves aparecer
+      ser referente \xE0 Fibonacci. Achei que do primeiro jeito seria mais interessante.
+      A forma que de fato implementei essa instru\xE7\xE3o foi usando do pr\xF3prio
+      Update da Unity e fiz as naves aparecerem em \u2018rounds\u2019. A cada round
+      \xE9 spawnada uma quantidade de naves Fibonacci(n), utilizando um algoritmo
+      recursivo, onde n \xE9 o n\xFAmero de rounds. Como uma nave \xE9 destru\xEDda
+      a cada segundo, o round muda quando as o n\xFAmero de naves ativas do round
+      chega a zero."
+    linkText: 
+    url: 
+  - heading: 
+    text: "2 - Ship/Spawner/ShipSpawner.cs:49, e Ship/Ship.cs:88; Cada nave \xE9
+      criada com uma velocidade rand\xF4mica cuja varia\xE7\xE3o \xE9 configur\xE1vel,
+      por default essa varia\xE7\xE3o \xE9 de 1 \xE0 10. Al\xE9m disso sua velocidade
+      \xE9 aumentada linearmente por um valor arbitr\xE1rio tamb\xE9m configur\xE1vel,
+      o padr\xE3o sendo 0.05. Por causa do aumento linear, a velocidade chega a valores
+      altos muito r\xE1pido e para conseguir mostrar na tela esse aumento fiz com
+      que a naves ficassem confinadas \xE0 area da camera."
+    linkText: 
+    url: 
+  - heading: 
+    text: "3 - Destroyer/ShipDestroyer.cs:31; Eu queria que a destrui\xE7\xE3o das
+      naves pudesse ser visualizada, assim, coloquei uma nave est\xE1tica central
+      cuja fun\xE7\xE3o \xE9 destruir as outras. A cada segundo a \u2018destroyer\u2019
+      atira em uma nave, quando esta \xE9 destru\xEDda ela mira em um novo alvo,
+      outra nave, e repete o ciclo."
+    linkText: 
+    url: 
+  - heading: 
+    text: "4 - Al\xE9m de naves criadas, tamb\xE9m adicionei a informa\xE7\xE3o de
+      naves spawnadas (diferente de criadas por causa do reciclamento do object pooling),
+      naves destru\xEDdas, naves ativas e informa\xE7\xF5es dos rounds. E tamb\xE9m
+      bot\xF5es que controlam alguns estados do jogo."
+    linkText: 
+    url: 
+  - heading: 
+    text: "5 - A UI \xE9 responsiva usando a ancoragem de elementos da Unity."
+    linkText: 
+    url: 
+  - heading: 
+    text: 
+    linkText: 
+    url: 
+  - heading: Sistemas
+    text: 
+    linkText: 
+    url: 
+  - heading: 
+    text: "D\xE1 pra dividir os sistemas em tr\xEAs \xE1reas maiores: elementos que
+      comp\xF5e o jogo, elementos de UI e gerenciamento. Tirando o AudioManager.cs,
+      que \xE9 Singleton, os scripts se conversam por eventos, seguindo majoritariamente
+      o Observer design pattern."
+    linkText: 
+    url: 
+  - heading: 
+    text: 
+    linkText: 
+    url: 
+  - heading: 
+    text: Gameplay
+    linkText: 
+    url: 
+  - heading: 
+    text: "O \u2018core loop\u2019 da gameplay \xE9 o sistema de rounds, gerenciado
+      pelo pr\xF3prio spawner das naves ShipSpawner.cs. O spawner possui tr\xEAs
+      vari\xE1veis que permitem esse core loop sem utilizar la\xE7os, _shipsCounter,
+      _rounds e _fibonacci. A primeira \xE9 referente \xE0 quantidade de naves spawnadas,
+      isso pra garantir que a cada round a quantidade de naves seja a mesma que a
+      sequ\xEAncia de Fibonacci atual. A segunda conta os rounds, pra ser utilizado
+      como o termo n de Fibonnaci(n), cujo resultado \xE9 guardado em _fibonacci."
+    linkText: 
+    url: 
+  - heading: 
+    text: "O spawner monitora a quantidade de objetos do tipo Ship ativas atualmente
+      na pool, e como uma nave \xE9 destru\xEDda a cada segundo pela nave central
+      (Destroyer), quando a quantidade de naves ativas chega a zero \xE9 chamado
+      o m\xE9todo NewRound(). O m\xE9todo reinicia a contagem de _shipsCounter e
+      aumenta em 1 a senqu\xEAncia de Fibonacci."
+    linkText: 
+    url: 
+  - heading: 
+    text: Spawners
+    linkText: 
+    url: 
+  - heading: 
+    text: "Al\xE9m do spawner de naves, tamb\xE9m tem o spawner dos tiros e das explos\xF5es.
+      Todos funcionam essencialmente da mesma forma, por object pooling. No Start()
+      a pool de objetos \xE9 criada e \xE9 associada \xE0 ela os m\xE9todos de evento
+      que ser\xE3o chamados ao criar um novo objeto (caso n\xE3o tenha um objeto
+      dispon\xEDvel), ao pegar (Get) um objeto da pool, ao liber\xE1-lo (Release)
+      de volta \xE0 ela e ao destru\xED-lo. A cria\xE7\xE3o \xE9 simplesmente uma
+      instancia\xE7\xE3o, os mais importantes s\xE3o os m\xE9todos de Get e Release
+      que, respectivamente, ativam e desativam o objeto, mantendo sua refer\xEAncia."
+    linkText: 
+    url: 
+  - heading: 
+    text: Naves
+    linkText: 
+    url: 
+  - heading: 
+    text: "O funcionamento da nave \xE9 de se mover para frente, e aumentar linearmente
+      sua velocidade. A velocidade inicial \xE9 definida pelo spawner. Existem dois
+      elementos est\xE1ticos que demarcam os limites da \xE1rea jog\xE1vel. O Camera
+      Bounds \xE9 delimitado pela \xE1rea da c\xE2mera, e o World Bounds \xE9 ligeiramente
+      maior que o Camera Bounds. Dito isso, as naves monitoram o estado do GameMode,
+      caso o modo seja \u2018Confined\u2019 as naves ir\xE3o colidir com o Camera
+      Bounds e refletir seu vetor frontal e vetor velocidade dando a impress\xE3o
+      de quicar. Caso o modo seja \u2018Free\u2019, o GameManager.cs muda a forma
+      de colis\xE3o com Camera Bounds para trigger, assim, no \xFAltimo instante
+      de colis\xE3o, a nave passa a ser teleportada para tr\xE1s do limite da c\xE2mera
+      por\xE9m no lado oposto, dando impress\xE3o de que a nave est\xE1 livre de
+      qualquer limite. Independente do modo de jogo, as naves sempre ir\xE3o rebater
+      no Destroyer."
+    linkText: 
+    url: 
+  - heading: 
+    text: "Explos\xF5es"
+    linkText: 
+    url: 
+  - heading: 
+    text: "O ExplosionSpawner.cs monitora os eventos disparados de quando uma nave
+      \xE9 destru\xEDda para spawnar uma explos\xE3o na posi\xE7\xE3o que aquela
+      nave se encontrava. A explos\xE3o em si \xE9 simplesmente um sistema de part\xEDculas
+      que roda logo ao ser instanciado e retorna para a pool quando acaba a dura\xE7\xE3o."
+    linkText: 
+    url: 
+  - heading: 
+    text: "Tanto as naves quanto as explos\xF5es possuem AudioSources embutidos que
+      n\xE3o s\xE3o gerenciados pelo AudioManager, por isso, eles, individualmente,
+      monitoram o estado de som e mutam/desmutam quando necess\xE1rio."
+    linkText: 
+    url: 
+  - heading: 
+    text: Destroyer
+    linkText: 
+    url: 
+  - heading: 
+    text: "O ShipDestroyer.cs cumpre a fun\xE7\xE3o de destruir uma nave a cada segundo.
+      Seu ciclo de vida \xE9: achar um alvo (quando n\xE3o existir um ou uma nave
+      for destru\xEDda), mirar, atirar (caso um segundo tenha se passado)... "
+    linkText: 
+    url: 
+  - heading: 
+    text: Tiros
+    linkText: 
+    url: 
+  - heading: 
+    text: "O BulletSpawner.cs \xE9 um elemento filho do Destroyer, dessa forma, quando
+      o Destroyer chama o m\xE9todo de atirar, uma Bullet.cs \xE9 spawnada e \xE0
+      ela \xE9 atribu\xEDda o alvo do Destroyer. O funcionamento da Bullet \xE9 de
+      simplesmente manter seu vetor frontal alinhado com o alvo e seguir muito r\xE1pido
+      para frente."
+    linkText: 
+    url: 
+  - heading: 
+    text: Utils
+    linkText: 
+    url: 
+  - heading: 
+    text: "S\xE3o uma cole\xE7\xE3o de m\xE9todos \xFAteis que posso reusar em qualquer
+      lugar da aplica\xE7\xE3o. Al\xE9m do m\xE9todo que calcula a sequ\xEAncia de
+      Fibonacci recursivamente, t\xEAm dois m\xE9todos para manter os objetos somente
+      nos eixos X e Y, em KeepParentZAxisOf o objeto mant\xE9m o eixo Z do parent
+      e em RemoveZAxisOf o eixo Z do objeto \xE9 mantido em 0. Esses m\xE9todos s\xE3o
+      necess\xE1rios as vezes pois a interpola\xE7\xE3o esf\xE9rica retorna uma posi\xE7\xE3o
+      nos tr\xEAs eixos. Al\xE9m disso tamb\xE9m existe o m\xE9todo GetRandomPositionInSpawnableArea,
+      que calcula uma posi\xE7\xE3o aleat\xF3ria dentro da \xE1rea da c\xE2mera."
+    linkText: 
+    url: 
+  - heading: UI
+    text: 
+    linkText: 
+    url: 
+  - heading: 
+    text: "A UI \xE9 composta de duas \xE1reas principais, o lado esquerdo possui
+      informa\xE7\xF5es, de cima para baixo: a quantidade de naves \xFAnicas criadas,
+      a quantidade de naves spawnadas, a quantidade total de naves destru\xEDdas,
+      a quantidade de naves que foram spawnadas no round atual, a quantidade de naves
+      atualmente ativas/vivas e em qual round o jogo se encontra; j\xE1 o lado direito
+      possui bot\xF5es interativos que mudam estados do jogo, de cima para baixo:
+      pausa e despausa o jogo, muda o modo de jogo (confinar as naves ou deix\xE1-las
+      livres), pula um round, altera o estado de som do jogo (pode-se colocar no
+      mudo apenas os efeitos sonoros, todos os sons ou tirar tudo do mudo) e reinicia
+      o jogo."
+    linkText: 
+    url: 
+  - heading: 
+    text: Background
+    linkText: 
+    url: 
+  - heading: 
+    text: "O background possui um efeito parallax, s\xE3o tr\xEAs imagens em camadas.
+      A camada mais a frente se move mais r\xE1pido enquanto a mais atr\xE1s se move
+      mais lentamente. A cada uma taxa de segundos configur\xE1vel (2.5 por default),
+      uma nova posi\xE7\xE3o aleat\xF3ria \xE9 definida para as tr\xEAs camadas seguirem.
+      A velocidade \xE9 definida por um interpola\xE7\xE3o esf\xE9rica da posi\xE7\xE3o
+      atual da camada e da posi\xE7\xE3o alvo."
+    linkText: 
+    url: 
+  - heading: Gerenciamento
+    text: 
+    linkText: 
+    url: 
+  - heading: 
+    text: "De \xC1udio"
+    linkText: 
+    url: 
+  - heading: 
+    text: "O AudioManager.cs possui uma lista de componentes AudioSource, _tracks,
+      podendo comportar m\xFAltiplas faixas ao mesmo tempo e uma lista de sons _sounds.
+      A primeira faixa \xE9 separada para m\xFAsica de fundo e a segunda para efeitos
+      sonoros. Os m\xE9todos s\xE3o acessados pela inst\xE2ncia est\xE1tica do AudioManager,
+      o m\xE9todo PlaySoundOneShot toca um som uma vez somente recebendo como par\xE2metros
+      o n\xFAmero da faixa e do som. Al\xE9m disso tamb\xE9m t\xEAm os m\xE9todos
+      para colocar ou retirar os sons do mudo."
+    linkText: 
+    url: 
+  - heading: 
+    text: Do Jogo
+    linkText: 
+    url: 
+  - heading: 
+    text: "O GameManager.cs possui vari\xE1veis est\xE1ticas para os estados importantes
+      de jogo, IsGamePaused, se o jogo est\xE1 atualmente pausado; GameMode, que
+      rege o estado da naves, entre ficarem confinadas \xE0 area da c\xE2mera (Confined)
+      e ficarem \u201Clivres\u201D (Free) e para tal, ele altera a forma de colis\xE3o
+      com Camera Bounds para \u2018trigger\u2019 quando no modo Free; e SoundState
+      que rege o estado do som, entre deixar mudo somente os SFX (MuteSFX), deixar
+      tudo no mudo (MuteAll), ou tirar tudo do mudo (UnmuteAll). O m\xE9todo que
+      pausa o jogo o faz ao colocar ao mudar o Time.timeScale em 0 (ou 1 para despausar)
+      e, ao pausar, o estado de som tamb\xE9m \xE9 alterado para MuteAll. Outro m\xE9todo
+      importante \xE9 o de SkipRound, ele funciona ao achar todas a naves ativas
+      e destru\xED-las, assim, o pr\xF3prio ShipSpawner reconhecer\xE1 que um novo
+      round deve ser feito. Al\xE9m disso, outra fun\xE7\xE3o importante do manager
+      \xE9 manter o frame rate em 60 fps."
+    linkText: 
+    url: 
+  - heading: 
+    text: Da UI
+    linkText: 
+    url: 
+  - heading: 
+    text: "O UIManager.cs mant\xE9m a refer\xEAncia dos elementos da interface e
+      os modifica de acordo com os eventos em que \xE9 inscrito. Possui vari\xE1veis
+      internas para auxiliar principalmente nas contagens, por exemplo, na quantidade
+      de naves criadas ou destru\xEDdas, isso para evitar a confus\xE3o de par\xE2metros
+      passados pelos eventos. Um fun\xE7\xE3o importante do manager \xE9 desabilitar
+      os bot\xF5es, tirando o de despausar e reinicar, sempre que o jogo \xE9 pausado."
+    linkText: 
+    url: 
+  - heading: "Testes Unit\xE1rios"
+    text: 
+    linkText: 
+    url: 
+  - heading: 
+    text: "Fiz apenas um teste que julguei realmente necess\xE1rio, que foi verificar
+      se o algoritmo recursivo para o c\xE1lculo da sequ\xEAncia de Fibonacci estava
+      correto."
+    linkText: 
+    url: 
+  - heading: 
+    text: 
+    linkText: 
+    url: 
+  - heading: "Cr\xE9ditos"
+    text: 
+    linkText: 
+    url: 
+  - heading: 
+    text: "Tentei usar somente os assets que foram providenciados ou que eu mesmo
+      fiz (os sons, o backgrounde e os icons), pra ficar mais aut\xEAntico. Por\xE9m,
+      a m\xFAsica eu peguei de um bundle free na Asset Store:"
+    linkText: Free Music Bundle by neocrey
+    url: https://assetstore.unity.com/packages/audio/music/electronic/free-music-bundle-by-neocrey-92835
+  - heading: 
+    text: "Al\xE9m disso, o Readme eu vi em um projeto oficial da Unity e achei interessante
+      aplicar aqui, o projeto sendo ele o:"
+    linkText: 3D Game Kit
+    url: https://assetstore.unity.com/packages/templates/tutorials/3d-game-kit-115747
+  - heading: 
+    text: 
+    linkText: 
+    url: 
+  - heading: Info
+    text: 
+    linkText: 
+    url: 
+  - heading: 
+    text: 
+    linkText: GitHub
+    url: https://github.com/lcscout
+  - heading: 
+    text: 
+    linkText: Lucas Coutinho
+    url: https://pt.coutinho.codes
