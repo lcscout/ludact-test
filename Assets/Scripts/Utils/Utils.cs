@@ -22,7 +22,7 @@ namespace Game.Utils { // Useful methods I can reuse anywhere
 		}
 
 		public static Vector3 GetRandomPositionInSpawnableArea() {
-			Vector3[] area = GetSpawnableArea();
+			Vector3[] area = GetCameraArea();
 			float horizontalPos = GetRandomPosition(area[0].x, area[1].x);
 			float verticalPos = GetRandomPosition(area[1].y, area[0].y);
 
@@ -33,7 +33,7 @@ namespace Game.Utils { // Useful methods I can reuse anywhere
 			return Quaternion.Euler(0, 0, Random.Range(0f, 180f));
 		}
 
-		private static Vector3[] GetSpawnableArea() {
+		private static Vector3[] GetCameraArea() {
 			Vector3[] area = new Vector3[2] {
 				Camera.main.ViewportToWorldPoint(new Vector3(0, 1, 0)), // top-left
 				Camera.main.ViewportToWorldPoint(new Vector3(1, 0, 0)), // bottom-right
